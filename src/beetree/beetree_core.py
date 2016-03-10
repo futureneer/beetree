@@ -145,32 +145,22 @@ class Node(object):
                     else:
                         print "NOT ATTACHED"
 
-                s = 'subgraph cluster'+str(group)+' {color="#888888";'
-                s += '{rank=same '
-                # rank=same D;E;F
-                for a in attached:
-                    s += str(a) + ';'
-                s += '}'
-                    # F->E->D [dir=back]
-                for a in attached:
-                    if a == attached[-1]:
-                        s += str(a) + ' '
-                    else:
-                        s += str(a) + '->'    
-                s += '[dir=back]'    
-                s += '}'
-
-                # s = '{rank=same'
-                # for a in attached:
-                #     s += ' ' + str(a) + ';'
-                # s = s + '}'
-                # dot += s
-
-                # s = ''
-                # for a in attached:
-                #     s += str(a) + ' -> '
-                # s += ' [dir=back]'
-                dot += s
+                if self.num_children_ > 1:                
+                    s = 'subgraph cluster'+str(group)+' {color="#888888";'
+                    s += '{rank=same '
+                    # rank=same D;E;F
+                    for a in attached:
+                        s += str(a) + ';'
+                    s += '}'
+                        # F->E->D [dir=back]
+                    for a in attached:
+                        if a == attached[-1]:
+                            s += str(a) + ' '
+                        else:
+                            s += str(a) + '->'    
+                    s += '[dir=back]'    
+                    s += '}'
+                    dot += s
 
 
         # if parent generate tail end of dotcode string
