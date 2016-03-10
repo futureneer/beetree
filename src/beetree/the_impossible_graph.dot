@@ -1,0 +1,28 @@
+digraph { 
+    splines=false;
+    node [shape="record", color="skyblue"];
+    edge [style="dashed", color="gray"];
+    rankdir="LR";
+
+    A -> B [weight=100] 
+    A -> C 
+    B -> D [weight=100]
+    C -> H
+           
+    subgraph cluster0 {
+      color   = "gray";
+      bgcolor = "oldlace";
+      {rank=same D;E;F}
+      E->D [dir=back]
+      F->E [dir=back]
+    }
+    
+    subgraph cluster1 {
+      color   = "gray";
+      bgcolor = "oldlace";
+      {rank=same H;I;J}
+      I->H [dir=back]
+      J->I [dir=back]
+    }
+    
+}

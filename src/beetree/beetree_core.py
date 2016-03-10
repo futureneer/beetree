@@ -60,7 +60,7 @@ class Node(object):
         """
         self.flag_ = flag
 
-    def generate_dot(self,run=False):
+    def generate_dot(self,run=False,group=0):
         """ Generates dot code for this node and its connection to its children
         Also recursively calls the children's generate_dot() functions
         """
@@ -73,7 +73,7 @@ class Node(object):
 
         # if parent generate front end of dotcode string
         if self.parent_ == None:
-            dot = 'digraph behavior_tree {bgcolor="#222222" nodesep=.5 ranksep=.5 rankdir=LR splines=false; '
+            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.5 ranksep=.5 rankdir=LR splines=false; '
         else:
             dot = ''
         # generate this node's dot code
@@ -91,13 +91,12 @@ class Node(object):
 
         # Change shape for collapsed nodes
         if self.collapsed:
-            # shape = 'diamond'
-            color = '#34495E'
+            color = '#C5EFF7'
             style = 'dashed'
             if self.flag_ == False:
-                dot = dot + self.name_ + ' [shape=box][URL="' +self.name_+'"][fontsize=13 fontname="times 13 bold" style="filled, '+style+'" fontcolor="#bbbbbb" color="#bbbbbb" fillcolor="'+color+'"][label="'+self.alt_label_+'"];'
+                dot = dot + self.name_ + ' [shape=box][URL="' +self.name_+'"][fontsize=13 fontname="times 13 bold" style="filled, '+style+'" fontcolor="#888888" color="#888888" fillcolor="'+color+'"][label="'+self.alt_label_+'"];'
             else:
-                dot = dot + self.name_ + ' [shape=box][URL="' +self.name_+'"][fontsize=13 fontname="times 13 bold" style="filled, '+style+'" fontcolor="#bbbbbb" color="red" fillcolor="'+color+'"][label="'+self.alt_label_+'"];'
+                dot = dot + self.name_ + ' [shape=box][URL="' +self.name_+'"][fontsize=13 fontname="times 13 bold" style="filled, '+style+'" fontcolor="#888888" color="#5C97BF" fillcolor="'+color+'"][label="'+self.alt_label_+'"];'
 
         else:
             color = self.color_
@@ -105,36 +104,75 @@ class Node(object):
 
             if self.flag_ == False:
                 if color == '':
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" fontcolor="#ffffff" color="#ffffff" label="'+label+'"]; '
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" fontcolor="#ffffff" color="#444444" label="'+label+'"]; '
                 else:
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" color="#ffffff" fillcolor="'+color+'"][label="'+label+'"]; '
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" color="#444444" fillcolor="'+color+'"][label="'+label+'"]; '
             else:
                 if color == '':
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" color="red"][label="'+label+'"]; '
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" color="#F62459"][label="'+label+'"]; '
                 else:
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" fillcolor="'+color+'" color="red"][label="'+label+'"]; '   
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" fillcolor="#F62459" color="#CF000F"][label="'+label+'"]; '   
 
         # recursively generate the node's child dot code
         if self.collapsed == False:
             if self.num_children_ > 0:
+                group += 1
                 first = True
-                for C in self.children_:
-                    dot += C.generate_dot(run)
+                attached = []
+                for C in reversed(self.children_):
+                    dot += C.generate_dot(run,group)
                     if C.attach:
+                        attached.append(C.name_)
                         # dot += self.name_ + ':s->' + C.name_ + ':n; '
                         if self.view_mode == 'sequential':
-                            dot += self.name_ + ':e->' + C.name_ + ':w [color="#ffffff"]; '
-                        elif self.view_mode == 'first':
-                            if first:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#ffffff"]; '
-                                first = False
+                            if C == self.children_[0]:
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
                             else:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [style="dashed" color="#888888"]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
+                        elif self.view_mode == 'first':
+                            if C == self.children_[0]:
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
+                            else:
+                                dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
+                            # if first:
+                            #     dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
+                            #     first = False
+                            # else:
+                            #     dot += self.name_ + ':e->' + C.name_ + ':w [style="dashed" color="#888888"]; '
                     else:
                         print "NOT ATTACHED"
 
+                s = 'subgraph cluster'+str(group)+' {color="#888888";'
+                s += '{rank=same '
+                # rank=same D;E;F
+                for a in attached:
+                    s += str(a) + ';'
+                s += '}'
+                    # F->E->D [dir=back]
+                for a in attached:
+                    if a == attached[-1]:
+                        s += str(a) + ' '
+                    else:
+                        s += str(a) + '->'    
+                s += '[dir=back]'    
+                s += '}'
+
+                # s = '{rank=same'
+                # for a in attached:
+                #     s += ' ' + str(a) + ';'
+                # s = s + '}'
+                # dot += s
+
+                # s = ''
+                # for a in attached:
+                #     s += str(a) + ' -> '
+                # s += ' [dir=back]'
+                dot += s
+
+
         # if parent generate tail end of dotcode string
-        if self.parent_ == None:        
+        if self.parent_ == None:
+            rospy.logwarn(dot)        
             return dot + '}'
         else:
             return dot
@@ -322,13 +360,13 @@ class NodeSequence(Node):
     SUCCESS.
     """
     def __init__(self,name,label):
-        L = '->'
+        L = 'Sequence'
         if label != '':
             L_alt = label
         else:
             L_alt = name.upper()+' Subtree'
-        color='#22A7F0'
-        super(NodeSequence,self).__init__(name,L,color,alt_label=L_alt,shape='diamond')
+        color='#19B5FE'
+        super(NodeSequence,self).__init__(name,L,color,alt_label=L_alt)
     def get_node_type(self):
         return 'SEQUENCE'
     def get_node_name(self):
@@ -515,7 +553,7 @@ class NodeDecoratorRepeat(Node):
             L_alt = name.upper()+' Subtree'
         color='#22A7F0'
         
-        super(NodeDecoratorRepeat,self).__init__(name,L,color,shape='invhouse',alt_label=L_alt,size=12)
+        super(NodeDecoratorRepeat,self).__init__(name,L,color,shape='pentagon',alt_label=L_alt,size=12)
         self.runs_ = runs
         self.num_runs_ = 0
     def get_node_type(self):
@@ -558,7 +596,7 @@ class NodeDecoratorIgnoreFail(Node):
         else:
             L_alt = name.upper()+' Subtree'
         color='#22A7F0'
-        super(NodeDecoratorIgnoreFail,self).__init__(name,L,color,shape='invhouse',alt_label=L_alt,size=12)
+        super(NodeDecoratorIgnoreFail,self).__init__(name,L,color,shape='pentagon',alt_label=L_alt,size=12)
     def get_node_type(self):
         return 'DECORATOR_REPEAT'
     def get_node_name(self):
@@ -581,7 +619,7 @@ class NodeDecoratorWaitForSuccess(Node):
         else:
             L_alt = name.upper()+' Subtree'
         color='#22A7F0'
-        super(NodeDecoratorWaitForSuccess,self).__init__(name,L,color,shape='invhouse',alt_label=L_alt,size=12)
+        super(NodeDecoratorWaitForSuccess,self).__init__(name,L,color,shape='pentagon',alt_label=L_alt,size=12)
         self.timeout = timeout # seconds
         self.timer = None
         self.started = False
@@ -646,9 +684,9 @@ class NodeRoot(Node):
     the tree
     '''
     def __init__(self, name, label):
-        L = 'ROOT'
+        L = 'Start'
         L_alt = "I am ROOT"
-        color='#22A7F0'
+        color='#19B5FE'
         super(NodeRoot,self).__init__(name,L,color,alt_label=L_alt)
     def get_node_type(self):
         return 'ROOT'
