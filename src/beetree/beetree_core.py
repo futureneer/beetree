@@ -76,7 +76,7 @@ class Node(object):
 
         # if parent generate front end of dotcode string
         if self.parent_ == None:
-            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.5 ranksep=.5 rankdir=LR splines=false; '
+            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.25 ranksep=.5 rankdir=LR splines=false; compound=true;'
         else:
             dot = ''
         # generate this node's dot code
@@ -122,19 +122,19 @@ class Node(object):
                 group += 1
                 first = True
                 attached = []
-                for C in reversed(self.children_):
+                for C in self.children_:
                     dot += C.generate_dot(run,group)
                     if C.attach:
                         attached.append(C.name_)
                         # dot += self.name_ + ':s->' + C.name_ + ':n; '
                         if self.view_mode == 'sequential':
                             if C == self.children_[0]:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#19B5FE" style=bold]; '
                             else:
                                 dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
                         elif self.view_mode == 'first':
                             if C == self.children_[0]:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444" style=bold]; '
                             else:
                                 dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
                             # if first:
@@ -145,27 +145,30 @@ class Node(object):
                     else:
                         print "NOT ATTACHED"
 
-                if self.num_children_ > 1:                
-                    s = 'subgraph cluster'+str(group)+' {color="#888888";'
+                if self.num_children_ > 1:
+                    if 'sequence' in self.name_.lower():                
+                        s = 'subgraph cluster'+str(group)+' {color="#19B5FE"; style=bold'
+                    else:
+                        s = 'subgraph cluster'+str(group)+' {color="#888888"; style=bold'
                     s += '{rank=same '
                     # rank=same D;E;F
                     for a in attached:
                         s += str(a) + ';'
                     s += '}'
                         # F->E->D [dir=back]
-                    for a in attached:
-                        if a == attached[-1]:
-                            s += str(a) + ' '
-                        else:
-                            s += str(a) + '->'    
-                    s += '[dir=back]'    
+                    # for a in attached:
+                    #     if a == attached[-1]:
+                    #         s += str(a) + ' '
+                    #     else:
+                    #         s += str(a) + '->'    
+                    # s += '[dir=back]'    
                     s += '}'
                     dot += s
 
 
         # if parent generate tail end of dotcode string
         if self.parent_ == None:
-            rospy.logwarn(dot)        
+            # rospy.logwarn(dot)        
             return dot + '}'
         else:
             return dot
