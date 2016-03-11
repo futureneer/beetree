@@ -63,6 +63,12 @@ class Node(object):
         """
         self.flag_ = flag
 
+    def get_graph_size(self,n=0):
+        n += 1
+        for C in self.children_:
+            n = C.get_graph_size(n)
+        return n
+
     def generate_dot(self,run=False,group=0):
         """ Generates dot code for this node and its connection to its children
         Also recursively calls the children's generate_dot() functions
@@ -76,7 +82,7 @@ class Node(object):
 
         # if parent generate front end of dotcode string
         if self.parent_ == None:
-            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.25 ranksep=.75 rankdir=LR splines=false; compound=true;'
+            dot = 'digraph behavior_tree {bgcolor="#F2F1EF" nodesep=.25 ranksep=.75 rankdir=LR splines=ortho; compound=true;'
         else:
             dot = ''
         # generate this node's dot code
@@ -94,7 +100,7 @@ class Node(object):
 
         # Change shape for collapsed nodes
         if self.collapsed:
-            color = '#C5EFF7'
+            color = '#F2F1EF'
             style = 'dashed'
             if self.flag_ == False:
                 dot = dot + self.name_ + ' [shape=box][URL="' +self.name_+'"][fontsize=13 fontname="times 13 bold" style="filled, '+style+'" fontcolor="#888888" color="#888888" fillcolor="'+color+'"][label="'+self.alt_label_+'"];'
