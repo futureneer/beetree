@@ -76,7 +76,7 @@ class Node(object):
 
         # if parent generate front end of dotcode string
         if self.parent_ == None:
-            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.25 ranksep=.5 rankdir=LR splines=false; compound=true;'
+            dot = 'digraph behavior_tree {bgcolor="#C5EFF7" nodesep=.25 ranksep=.75 rankdir=LR splines=false; compound=true;'
         else:
             dot = ''
         # generate this node's dot code
@@ -107,9 +107,9 @@ class Node(object):
 
             if self.flag_ == False:
                 if color == '':
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" fontcolor="#ffffff" color="#444444" label="'+label+'"]; '
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" fontcolor="#ffffff" color="#ffffff" label="'+label+'"]; '
                 else:
-                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" color="#444444" fillcolor="'+color+'"][label="'+label+'"]; '
+                    dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="filled, '+style+'" fontcolor="#ffffff" color="#ffffff" fillcolor="'+color+'"][label="'+label+'"]; '
             else:
                 if color == '':
                     dot = dot + self.name_ + ' [shape='+shape+'][URL="' +self.name_+'"][fontsize='+sz+' fontname="times '+sz+' bold" style="'+style+'" color="#F62459"][label="'+label+'"]; '
@@ -129,14 +129,18 @@ class Node(object):
                         # dot += self.name_ + ':s->' + C.name_ + ':n; '
                         if self.view_mode == 'sequential':
                             if C == self.children_[0]:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#19B5FE" style=bold]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#777777" style=bold]; '
                             else:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#777777" style=bold]; '
+                                # dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
                         elif self.view_mode == 'first':
                             if C == self.children_[0]:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444" style=bold]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [color="#777777" style=bold]; '
+                                # dot += self.name_ + ':e->' + C.name_ + ':w [style="dashed" color="#888888"]; '
                             else:
-                                dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
+                                dot += self.name_ + ':e->' + C.name_ + ':w [style="dashed" color="#999999"]; '
+                                # dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444" style=bold]; '
+                                # dot += self.name_ + ':e->' + C.name_ + ':w [style=invis]; '
                             # if first:
                             #     dot += self.name_ + ':e->' + C.name_ + ':w [color="#444444"]; '
                             #     first = False
@@ -145,25 +149,25 @@ class Node(object):
                     else:
                         print "NOT ATTACHED"
 
-                if self.num_children_ > 1:
-                    if 'sequence' in self.name_.lower():                
-                        s = 'subgraph cluster'+str(group)+' {color="#19B5FE"; style=bold'
-                    else:
-                        s = 'subgraph cluster'+str(group)+' {color="#888888"; style=bold'
-                    s += '{rank=same '
-                    # rank=same D;E;F
-                    for a in attached:
-                        s += str(a) + ';'
-                    s += '}'
-                        # F->E->D [dir=back]
-                    # for a in attached:
-                    #     if a == attached[-1]:
-                    #         s += str(a) + ' '
-                    #     else:
-                    #         s += str(a) + '->'    
-                    # s += '[dir=back]'    
-                    s += '}'
-                    dot += s
+                # if self.num_children_ > 1:
+                #     if 'sequence' in self.name_.lower():                
+                #         s = 'subgraph cluster'+str(group)+' {color="#19B5FE"; style=bold'
+                #     else:
+                #         s = 'subgraph cluster'+str(group)+' {color="#888888"; style=bold'
+                #     s += '{rank=same '
+                #     # rank=same D;E;F
+                #     for a in attached:
+                #         s += str(a) + ';'
+                #     s += '}'
+                #         # F->E->D [dir=back]
+                #     # for a in attached:
+                #     #     if a == attached[-1]:
+                #     #         s += str(a) + ' '
+                #     #     else:
+                #     #         s += str(a) + '->'    
+                #     # s += '[dir=back]'    
+                #     s += '}'
+                #     dot += s
 
 
         # if parent generate tail end of dotcode string
@@ -322,13 +326,13 @@ class NodeSelector(Node):
     returns SUCCESS, if all fail, returns FAILURE.
     '''
     def __init__(self,name,label):
-        L = '?'
+        L = 'Selector'
         if label != '':
             L_alt = label
         else:
             L_alt = name.upper()+' Subtree'
-        color='#22A7F0'
-        super(NodeSelector,self).__init__(name,L,color,alt_label=L_alt,view_mode='first',shape='circle')
+        color='#F89406'
+        super(NodeSelector,self).__init__(name,L,color,alt_label=L_alt,view_mode='first')
     def get_node_type(self):
         return 'SELECTOR'
     def get_node_name(self):
