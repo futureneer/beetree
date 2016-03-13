@@ -312,11 +312,17 @@ class Node(object):
     def get_parent(self):
         return self.parent_
 
+    def get_parent_name(self):
+        return self.parent_.name_
+
     def get_status(self):
         return self.node_status_
 
     def get_child_names(self):
         return deepcopy(self.children_names_)
+
+    def get_num_children(self):
+        return self.num_children_
 
     def execute(self):
         """ Virtual function that each node runs when that node gets ticked
