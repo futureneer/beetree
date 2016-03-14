@@ -186,7 +186,7 @@ class Node(object):
     def reset(self):
         """ Resets the children of this node. useful when an execution is finished and the subtree needs to be reset
         """
-        print "Node " + self.name_ + " resetting."
+        # print "Node " + self.name_ + " resetting."
         self.reset_self()
         for C in self.children_:
             C.reset()
@@ -644,7 +644,7 @@ class NodeDecoratorWaitForSuccess(Node):
         return 'Decorator Repeat'
     def execute(self):
         if self.needs_reset:
-            rospy.logwarn('Success Decorator needs already returned '+ self.get_status())
+            # rospy.logwarn('Success Decorator needs already returned '+ self.get_status())
             return self.get_status()
 
         if not self.finished:
@@ -656,27 +656,27 @@ class NodeDecoratorWaitForSuccess(Node):
                     self.started = True
                 self.child_status_ = self.children_[0].execute()
                 if self.child_status_ == 'SUCCESS':
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: REPORTED SUCCESS')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: REPORTED SUCCESS')
                     self.needs_reset = True
                     return self.set_status('SUCCESS')
                 elif self.child_status_ == 'RUNNING':
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD RUNNING, WAITING')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD RUNNING, WAITING')
                     return self.set_status('RUNNING')
                 else:
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD FAILED, RESET, WAITING')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD FAILED, RESET, WAITING')
                     self.children_[0].reset()
                     return self.set_status('RUNNING')
             else: # started
                 self.child_status_ = self.children_[0].execute()
                 if self.child_status_ == 'SUCCESS':
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: REPORTED SUCCESS')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: REPORTED SUCCESS')
                     self.needs_reset = True
                     return self.set_status('SUCCESS')
                 elif self.child_status_ == 'RUNNING':
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD RUNNING, WAITING')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD RUNNING, WAITING')
                     return self.set_status('RUNNING')
                 else:
-                    rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD FAILED, RESET, WAITING')
+                    # rospy.logwarn('WAIT SUCCESS DECORATOR ['+self.name_+']: CHILD FAILED, RESET, WAITING')
                     self.children_[0].reset()
                     return self.set_status('RUNNING')
         else: # finished
